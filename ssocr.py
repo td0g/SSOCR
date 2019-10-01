@@ -196,6 +196,7 @@ def recognize_digits_area_method(digits_positions, output_img, input_img):
 
 def recognize_digits_line_method(digits_positions, output_img, input_img):
     digits = []
+	
     for c in digits_positions:
         x0, y0 = c[0]
         x1, y1 = c[1]
@@ -233,6 +234,7 @@ def recognize_digits_line_method(digits_positions, output_img, input_img):
 
         for (i, ((xa, ya), (xb, yb))) in enumerate(segments):
             seg_roi = roi[ya:yb, xa:xb]
+            cv2.rectangle(output_img,(x0+xa, y0+ya),(x0+xb,y0+yb), (0, 128,0),2) #VTG - Add all the line test rectangles, make them green
             # plt.imshow(seg_roi, 'gray')
             # plt.show()
             total = cv2.countNonZero(seg_roi)
@@ -254,13 +256,13 @@ def recognize_digits_line_method(digits_positions, output_img, input_img):
             digits.append('.')
             cv2.rectangle(output_img,
                           (x0 + w - int(3 * width / 4), y0 + h - int(3 * width / 4)),
-                          (x1, y1), (0, 128, 0), 2)
+                          (x1, y1), (0, 0, 255), 2) #VTG - Make red
             cv2.putText(output_img, 'dot',
                         (x0 + w - int(3 * width / 4), y0 + h - int(3 * width / 4) - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 128, 0), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2) #VTG - Make red
 
-        cv2.rectangle(output_img, (x0, y0), (x1, y1), (0, 128, 0), 2)
-        cv2.putText(output_img, str(digit), (x0 + 3, y0 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 128, 0), 2)
+        cv2.rectangle(output_img, (x0, y0), (x1, y1), (10, 10, 10), 2) #VTG - Change outline colour to black
+        cv2.putText(output_img, str(digit), (x0 + 3, y0 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2) #VTG - Make red
     return digits
 
 
@@ -270,6 +272,7 @@ def main():
     output = blurred
     dst = preprocess(blurred, THRESHOLD, show=args.show_image)
     digits_positions = find_digits_positions(dst)
+    output = cv2.cvtColor(output, cv2.COLOR_GRAY2BGR) #VTG - Make colour image so it's easier to see
     digits = recognize_digits_line_method(digits_positions, output, dst)
     if args.show_image:
         cv2.imshow('output', output)
